@@ -231,6 +231,7 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
   // Generate background URL from keywords or use provided image
   const getBackgroundUrl = () => {
     if (chapter.backgroundImage) return chapter.backgroundImage
+    if (story.coverImage) return story.coverImage
     if (chapter.backgroundKeywords) {
       const keywords = chapter.backgroundKeywords.split(' ').join(',')
       return `https://source.unsplash.com/1920x1080/?${keywords}`
