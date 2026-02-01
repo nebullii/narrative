@@ -1,0 +1,29 @@
+<svg width="800" height="800" viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="diamond" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E6F8FF"/>
+      <stop offset="0.4" stop-color="#B7E8FF"/>
+      <stop offset="0.7" stop-color="#8FD8FF"/>
+      <stop offset="1" stop-color="#E6F8FF"/>
+    </linearGradient>
+    <linearGradient id="diamondEdge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5BAAD6"/>
+      <stop offset="1" stop-color="#E6F8FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="#F6F1E9"/>
+  <g transform="translate(90 70)">
+    <rect x="150" y="40" width="260" height="260" rx="58" fill="url(#diamond)" stroke="url(#diamondEdge)" stroke-width="10"/>
+    <rect x="90" y="110" width="90" height="170" rx="40" fill="#CDE7FF" stroke="#7AA7D8" stroke-width="10"/>
+    <rect x="430" y="110" width="90" height="170" rx="40" fill="#D8F5D2" stroke="#7BBF8A" stroke-width="10"/>
+    <circle cx="280" cy="185" r="62" fill="#FFFFFF" stroke="#8FD8FF" stroke-width="8"/>
+    <path d="M258 185L278 205L320 165" stroke="#3A6F92" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="210" y="320" width="140" height="70" rx="24" fill="#B7E8FF"/>
+    <rect x="160" y="390" width="240" height="110" rx="26" fill="#FFFFFF" stroke="#8FD8FF" stroke-width="8"/>
+    <rect x="120" y="500" width="320" height="130" rx="30" fill="#FFFFFF" stroke="#8FD8FF" stroke-width="8"/>
+    <text x="280" y="575" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#2E5C7A">Diamond Book</text>
+    <path d="M170 650C220 690 340 690 390 650" stroke="#8FD8FF" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="190" cy="660" r="10" fill="#8FD8FF"/>
+    <circle cx="370" cy="660" r="10" fill="#8FD8FF"/>
+  </g>
+</svg>

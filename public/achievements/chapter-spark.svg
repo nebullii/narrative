@@ -1,0 +1,11 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="96" fill="#FFF7EA"/>
+  <rect x="120" y="120" width="272" height="200" rx="24" fill="#FFFFFF" stroke="#FFD1A6" stroke-width="8"/>
+  <path d="M156 170H356" stroke="#B3D4FF" stroke-width="10" stroke-linecap="round"/>
+  <path d="M156 220H316" stroke="#FFD1A6" stroke-width="10" stroke-linecap="round"/>
+  <path d="M156 270H336" stroke="#C9F2C1" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="392" cy="240" r="32" fill="#FFF1B3" stroke="#E6A64C" stroke-width="6"/>
+  <path d="M376 240L390 254L412 230" stroke="#7A4D1F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="150" y="350" width="212" height="72" rx="36" fill="#FFB4C8"/>
+  <text x="256" y="395" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#7A3A4A">Chapter Spark</text>
+</svg>

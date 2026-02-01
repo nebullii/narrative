@@ -8,6 +8,8 @@ env/
 # Build outputs
 dist/
 build/
+.next/
+out/
 *.egg-info/
 
 # Database
@@ -43,3 +45,5 @@ coverage/
 # Deployment
 .vercel
 .railway
+
+/lib/generated/prisma

@@ -1,0 +1,26 @@
+{
+  "name": "narratai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.3.0",
+    "bcrypt": "^6.0.0",
+    "cookie": "^1.1.1",
+    "dotenv": "^17.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "next": "^16.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "prisma": "^7.3.0",
+    "tailwindcss": "^3.4.1"
+  }
+}

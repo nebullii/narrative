@@ -4,7 +4,7 @@
 
 ## 🚀 Quick Start with Forge
 
-This project uses [Forge](https://github.com/sundai-club/forge) for structured AI-assisted development.
+This project uses [Forge](https://github.com/nebullii/forge) for structured AI-assisted development.
 
 ### 1. Read the Specifications
 
@@ -12,38 +12,33 @@ The AI needs to understand what to build:
 
 ```bash
 # Your specifications are in:
-.forge/spec.md   # What to build (features, pages, API)
-.forge/rules.md  # How to build it (constraints, structure)
+.claude/spec.md   # What to build (features, pages, API)
+.claude/rules.md  # How to build it (constraints, structure)
 ```
 
 ### 2. Build with AI
 
 ```bash
 # Tell Claude Code to build from specs:
-claude "Read .forge/spec.md and .forge/rules.md, then build this project for Day 1 MVP"
+claude "Read .claude/spec.md and .claude/rules.md, then build this project for Day 1 MVP"
 ```
 
 The AI will:
-- Create the React + FastAPI structure
+- Create the Next.js app structure
 - Build the reading interface
 - Implement chapter progression
 - Add artifact reveals and journal
-- Set up story data loading
+- Set up story data loading from JSON
 
 ### 3. Run Locally
 
 ```bash
-# Frontend (React + Vite)
-cd frontend
+# Install dependencies
 npm install
-npm run dev
-# Opens at http://localhost:5173
 
-# Backend (FastAPI)
-cd backend
-pip install -r requirements.txt
-python main.py
-# Runs at http://localhost:8000
+# Run development server
+npm run dev
+# Opens at http://localhost:3000
 ```
 
 ### 4. Day 2: Add Voice Mode
@@ -77,29 +72,25 @@ claude "Now implement Day 2 features: WebRTC voice connection and VAD"
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18 + Vite + Tailwind CSS
-- **Backend**: FastAPI + Python 3.10+
-- **Database**: SQLite
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS
+- **Storage**: JSON files + localStorage
 - **Voice**: WebRTC (peer-to-peer)
-- **Deploy**: Vercel or Railway
+- **Deploy**: Vercel
 
 ## 📁 Project Structure
 
 ```
 /
-├── frontend/          # React app
-│   ├── src/
-│   │   ├── components/    # UI components
-│   │   ├── pages/         # Route pages
-│   │   ├── hooks/         # Custom hooks (voice, WebRTC)
-│   │   └── App.jsx
-│   └── package.json
-├── backend/           # FastAPI app
-│   ├── main.py
-│   ├── routes/            # API endpoints
-│   └── requirements.txt
-├── data/              # Story JSON files
-└── assets/            # Static artifacts
+├── app/               # Next.js App Router
+│   ├── page.js       # Home
+│   ├── solo/         # Solo reading pages
+│   ├── journal/      # Progress tracking
+│   └── api/          # API routes
+├── components/        # React components
+├── lib/              # Utilities
+├── data/             # Story JSON files
+└── public/           # Static assets
 ```
 
 ## 🎨 Design Principles
@@ -111,19 +102,16 @@ claude "Now implement Day 2 features: WebRTC voice connection and VAD"
 
 ## 📝 Making Changes
 
-1. Update `.forge/spec.md` with new features
-2. Tell Claude: `"Read .forge/spec.md and implement [feature]"`
+1. Update `.claude/spec.md` with new features
+2. Tell Claude: `"Read .claude/spec.md and implement [feature]"`
 3. Test locally
 4. Iterate
 
 ## 🚢 Deployment
 
 ```bash
-# Deploy to Vercel (frontend + serverless backend)
-vercel
-
-# Or deploy to Railway (full-stack)
-railway up
+# Deploy to Vercel
+npx vercel
 ```
 
 ## 🧪 Testing Your Build

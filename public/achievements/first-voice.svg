@@ -1,0 +1,10 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="96" fill="#FFF7EA"/>
+  <circle cx="256" cy="196" r="84" fill="#CDE7FF"/>
+  <rect x="172" y="292" width="168" height="120" rx="60" fill="#FFB4C8"/>
+  <rect x="120" y="132" width="64" height="128" rx="32" fill="#FFD1A6"/>
+  <rect x="328" y="132" width="64" height="128" rx="32" fill="#D8F5D2"/>
+  <circle cx="256" cy="196" r="38" fill="#FFFFFF"/>
+  <path d="M236 196L252 212L280 184" stroke="#7A4D1F" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="380" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#7A3A4A">First Voice</text>
+</svg>

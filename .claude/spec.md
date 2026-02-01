@@ -1,85 +1,76 @@
-# Project: Narratai
+# Narratai - Product Spec (Current MVP)
 
-## What
-An interactive storytelling app where people read stories together, either solo or with a partner using voice. Calm, meaningful reading experience with chapter artifacts and progress tracking.
+## Vision
+Create a calm, cozy visual-novel-style reading experience where users narrate chapters aloud. The app feels like a soft, magical studio: warm backgrounds, gentle ambient audio, and visual rewards for completing chapters and books.
 
-## Users
-- Solo readers who want a focused, distraction-free reading experience
-- Pairs (friends, parent-child, partners) who want to read stories together remotely
-- People seeking mindful, screen-time alternatives to social media
+## Core Experience
+- Users choose a story and read an entire chapter on one screen.
+- They can tap any paragraph to make it "active" for focus.
+- They record **one full chapter take** (mic plus optional ambient).
+- Progress bars show chapter and book completion.
+- Rewards appear at chapter end:
+  - Silver Book sticker (chapter)
+  - Golden Book badge (story)
+  - Diamond Book trophy (book)
+- Micro-achievements add small dopamine moments (local only).
 
-## Features
-### Day 1 - Core Reading & Solo MVP
-- [ ] Story data structure with JSON chapters (narrator + player lines)
-- [ ] Reading screen showing one line at a time with speaker highlighting
-- [ ] Chapter progression with "Next Line" button
-- [ ] Chapter completion screen with artifact (image/text) reveal
-- [ ] Journal/progress screen showing artifacts collected and chapters completed
-- [ ] Optional reflection notes for each chapter
-- [ ] Two-player room placeholder (join room, display names)
+## Modes
+- **Solo**: One reader narrates.
+- **Two Readers (Local)**: Two people on the same device. Paragraphs can be labeled `reader: 1` or `reader: 2` to guide turns. Recording remains a single chapter take.
 
-### Day 2 - Two-Player Voice & Polish
-- [ ] WebRTC connection for two players
-- [ ] Voice Activity Detection (VAD) - speaking unlocks player's line
-- [ ] Real-time speaker highlighting in two-player mode
-- [ ] Shared artifacts between players
-- [ ] Shared journal progress
-- [ ] Ambient quiet moment after chapter completion
-- [ ] Smooth UI transitions and calm typography
-- [ ] Optional ambient soundscape
+## Audio
+- MediaRecorder for capture.
+- Web Audio API for mixing mic + ambient.
+- User can toggle "Include background in recording".
+- Recordings stored in IndexedDB (one per chapter).
 
-## Tech Stack
-- Frontend: React with Vite
-- Backend: FastAPI (Python) for story data and room management
-- Database: SQLite for story content and progress tracking
-- Styling: Tailwind CSS (calm, minimal design)
-- Voice: WebRTC for peer-to-peer voice connection
-- Optional: Firebase/Supabase for real-time room state
+## Visuals
+- Calm, cozy, magical palette.
+- Stickers are colorful and feel tactile.
+- AI backgrounds optional:
+  - Gemini image generation with a soft, painterly prompt.
+  - Cached in localStorage.
 
-## Pages
-- `/` - Home/landing (start solo or join room)
-- `/solo/:storyId` - Solo reading mode
-- `/room/:roomId` - Two-player voice reading mode
-- `/journal` - Progress tracking (artifacts, chapters, reflections)
-- `/chapter-end/:chapterId` - Chapter completion with artifact
-
-## API Endpoints
-- `GET /api/health` - Health check
-- `GET /api/stories` - List available stories
-- `GET /api/stories/:id` - Get story with all chapters
-- `GET /api/chapters/:id` - Get specific chapter data
-- `POST /api/rooms` - Create two-player room
-- `GET /api/rooms/:id` - Get room state
-- `POST /api/progress` - Save chapter progress
-- `GET /api/progress/:userId` - Get user's journal/progress
-- `POST /api/reflections` - Save chapter reflection
-
-## Story Data Structure
-```json
+## Data Model (Story JSON)
+```
 {
-  "title": "The Secret Garden",
+  "id": "story-id",
+  "title": "Story Title",
+  "author": "Author Name",
+  "description": "...",
   "chapters": [
     {
       "id": 1,
-      "lines": [
-        {"speaker": "narrator", "text": "Mary Lennox was a sour-faced girl..."},
-        {"speaker": "player1", "text": "I don't like this place."},
-        {"speaker": "narrator", "text": "She looked around the big, lonely house..."}
+      "title": "Chapter Title",
+      "backgroundKeywords": "cozy library dusk",
+      "ambientAudio": "/audio/ambient.mp3",
+      "paragraphs": [
+        { "id": "p1", "reader": 1, "text": "..." }
       ],
-      "artifact": {
-        "type": "image",
-        "url": "/artifacts/mary-arrival.jpg",
-        "caption": "Mary's arrival sketch"
-      }
+      "artifact": { "type": "image", "url": "/artifacts/x.svg", "caption": "..." }
     }
   ]
 }
 ```
 
-## Vibe
-Calm, mindful, distraction-free. Soft backgrounds, warm typography, quiet ambient sounds. No streaks, no percentages, no gamification. Focus on connection (with story or another person) and meaningful reflection. Like a cozy reading nook, not a productivity app.
+## Progress Tracking
+- localStorage key: `narratai-progress`
+- Store:
+  - `completedChapters` array
+  - `artifacts` array
+  - `title`, `author`
 
-## MVP Scope (2 Days)
-- Day 1: Solo reading works with 2 chapters, artifacts unlock, journal stores progress
-- Day 2: Basic two-player voice mode with VAD, shared progress, polished UI
-- First story: "The Secret Garden" (first 2 chapters adapted for interactive reading)
+## Micro-Achievements (Local)
+- `narratai-achievements`:
+  - First Voice (first recording)
+  - Chapter Spark (first chapter)
+  - Three Chapters (3 chapters completed)
+  - Story Finished (story completed)
+
+## Out of Scope (for now)
+- Auth or accounts
+- Database
+- Remote team mode
+- WebRTC / live voice chat
+- Social sharing
+- Competitive gamification

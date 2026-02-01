@@ -1,0 +1,63 @@
+{
+  "id": "velveteen-rabbit",
+  "title": "The Velveteen Rabbit",
+  "author": "Margery Williams",
+  "description": "A beloved tale of a stuffed rabbit who dreams of becoming real through the power of love.",
+  "coverImage": "/covers/velveteen-rabbit.svg",
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Christmas Morning",
+      "backgroundKeywords": "cozy nursery christmas morning warm toys",
+      "paragraphs": [
+        {
+          "id": "p1",
+          "reader": 1,
+          "text": "There was once a velveteen rabbit, and in the beginning he was really splendid. He was fat and bunchy, as a rabbit should be; his coat was spotted brown and white."
+        },
+        {
+          "id": "p2",
+          "reader": 2,
+          "text": "He had real thread whiskers, and his ears were lined with pink sateen. On Christmas morning, when he sat wedged in the top of the Boy's stocking, the effect was charming."
+        },
+        {
+          "id": "p3",
+          "reader": 1,
+          "text": "For at least two hours the Boy loved him, and then in the excitement of looking at all the new presents, the Velveteen Rabbit was forgotten."
+        }
+      ],
+      "artifact": {
+        "type": "image",
+        "url": "/artifacts/velveteen-rabbit.svg",
+        "caption": "A soft velveteen rabbit with kind button eyes"
+      }
+    },
+    {
+      "id": 2,
+      "title": "The Skin Horse",
+      "backgroundKeywords": "nursery twilight gentle warm cozy toys",
+      "paragraphs": [
+        {
+          "id": "p1",
+          "reader": 1,
+          "text": "The Skin Horse had lived longer in the nursery than any of the others. He was so old that his brown coat was bald in patches and most of the hairs in his tail had been pulled out."
+        },
+        {
+          "id": "p2",
+          "reader": 2,
+          "text": "'What is REAL?' asked the Rabbit one day. 'Does it mean having things that buzz inside you and a stick-out handle?'"
+        },
+        {
+          "id": "p3",
+          "reader": 1,
+          "text": "'Real isn't how you are made,' said the Skin Horse. 'It's a thing that happens to you. When a child loves you for a long, long time, not just to play with, but REALLY loves you, then you become Real.'"
+        }
+      ],
+      "artifact": {
+        "type": "image",
+        "url": "/artifacts/skin-horse.svg",
+        "caption": "The wise old Skin Horse, worn but beloved"
+      }
+    }
+  ]
+}

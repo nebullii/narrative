@@ -1,11 +1,11 @@
-# Getting Started with Narratai + Forge
+# Getting Started with Narratai
 
-This guide will walk you through building the Narratai MVP using Forge and Claude Code.
+This guide will walk you through building the Narratai MVP with Next.js and Claude Code.
 
 ## What You Have Right Now
 
-✅ `.forge/spec.md` - Complete specification of what to build
-✅ `.forge/rules.md` - Build constraints and structure
+✅ `.claude/spec.md` - Complete specification of what to build
+✅ `.claude/rules.md` - Build constraints and structure
 ✅ `data/secret-garden.json` - Sample story with 2 chapters
 ✅ `README.md` - Project documentation
 
@@ -16,8 +16,8 @@ This guide will walk you through building the Narratai MVP using Forge and Claud
 Read these files to understand the project:
 
 ```bash
-cat .forge/spec.md    # What features to build
-cat .forge/rules.md   # How to build them
+cat .claude/spec.md    # What features to build
+cat .claude/rules.md   # How to build them
 ```
 
 **Key points:**
@@ -30,8 +30,8 @@ cat .forge/rules.md   # How to build them
 Tell Claude Code to build from your specifications:
 
 ```bash
-claude "Read .forge/spec.md and .forge/rules.md. Build the Day 1 MVP:
-- Project structure (React frontend + FastAPI backend)
+claude "Read .claude/spec.md and .claude/rules.md. Build the Day 1 MVP with Next.js:
+- Next.js app structure with App Router
 - Reading screen with line-by-line progression
 - Chapter completion with artifacts
 - Journal for progress tracking
@@ -41,25 +41,31 @@ Focus on getting solo reading mode working end-to-end."
 ```
 
 Claude will:
-1. Create `frontend/` with React + Vite setup
-2. Create `backend/` with FastAPI structure
-3. Build UI components (ReadingScreen, ChapterEnd, Journal)
-4. Implement API endpoints for stories and progress
+1. Create Next.js app with App Router structure
+2. Build UI components (ReadingScreen, ChapterEnd, Journal)
+3. Implement API routes for stories
+4. Set up localStorage for progress tracking
 5. Connect everything together
 
 ### Step 3: Test Day 1 Build
 
 ```bash
-# Terminal 1 - Backend
-cd backend
-pip install -r requirements.txt
-python main.py
-
-# Terminal 2 - Frontend
-cd frontend
+# Install and run
 npm install
 npm run dev
+# Opens at http://localhost:3000
 ```
+
+### Optional: AI Backgrounds (Gemini)
+
+To enable AI-generated backgrounds, set:
+
+```bash
+GEMINI_API_KEY="your-key"
+GEMINI_IMAGE_MODEL="gemini-1.5-flash"
+```
+
+If not set, the app falls back to the chapter background image/keywords.
 
 **Manual test checklist:**
 - [ ] Can you load the Secret Garden story?

@@ -1,0 +1,11 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="96" fill="#FFF7EA"/>
+  <circle cx="176" cy="200" r="52" fill="#FFD1A6"/>
+  <circle cx="256" cy="200" r="52" fill="#CDE7FF"/>
+  <circle cx="336" cy="200" r="52" fill="#D8F5D2"/>
+  <path d="M160 200L172 212L192 188" stroke="#7A4D1F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M240 200L252 212L272 188" stroke="#7A4D1F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M320 200L332 212L352 188" stroke="#7A4D1F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="140" y="320" width="232" height="80" rx="40" fill="#B3D4FF"/>
+  <text x="256" y="370" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#2F4A7A">Three Chapters</text>
+</svg>
