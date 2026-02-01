@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Link from 'next/link'
 import { saveAudio, getAudio } from '@/lib/audioStorage'
 import { awardAchievement } from '@/lib/achievements'
 
@@ -19,9 +20,8 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
   const [readerNames, setReaderNames] = useState({ 1: 'Reader 1', 2: 'Reader 2' })
   const [activeReader, setActiveReader] = useState(1)
   const [includeBackground, setIncludeBackground] = useState(true)
-  const [aiBackgroundEnabled, setAiBackgroundEnabled] = useState(false)
-  const [resolvedBackgroundUrl, setResolvedBackgroundUrl] = useState(null)
   const [toasts, setToasts] = useState([])
+  const [completedChapters, setCompletedChapters] = useState(0)
 
   // Refs
   const ambientRef = useRef(null)
@@ -41,6 +41,15 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
     getAudio(audioKey).then(audio => setHasRecording(!!audio)).catch(() => {})
   }, [audioKey])
 
+  // Load book progress from localStorage
+  useEffect(() => {
+    const progress = JSON.parse(localStorage.getItem('narratai-progress') || '{}')
+    const storyProgress = progress[story.id]
+    if (storyProgress?.completedChapters) {
+      setCompletedChapters(storyProgress.completedChapters.length)
+    }
+  }, [story.id])
+
   // Fade in text after starting
   useEffect(() => {
     if (started) {
@@ -59,6 +68,12 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
   useEffect(() => {
     setRecordingError('')
   }, [currentParagraph])
+
+  useEffect(() => {
+    if (mode === 'duo' && !includeBackground) {
+      setIncludeBackground(true)
+    }
+  }, [mode, includeBackground])
 
   useEffect(() => {
     return () => {
@@ -239,45 +254,7 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
     return null
   }
 
-  useEffect(() => {
-    const loadAiBackground = async () => {
-      if (!aiBackgroundEnabled) {
-        setResolvedBackgroundUrl(null)
-        return
-      }
-      const cacheKey = `narratai-bg-${story.id}-ch${chapter.id}`
-      const cached = localStorage.getItem(cacheKey)
-      if (cached) {
-        setResolvedBackgroundUrl(cached)
-        return
-      }
-      try {
-        const res = await fetch('/api/background', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            storyId: story.id,
-            chapterId: chapter.id,
-            title: chapter.title,
-            description: story.description,
-            keywords: chapter.backgroundKeywords
-          })
-        })
-        if (!res.ok) throw new Error('Background request failed')
-        const data = await res.json()
-        if (data?.url) {
-          localStorage.setItem(cacheKey, data.url)
-          setResolvedBackgroundUrl(data.url)
-        }
-      } catch (error) {
-        console.warn('AI background error:', error)
-        setResolvedBackgroundUrl(null)
-      }
-    }
-    loadAiBackground()
-  }, [aiBackgroundEnabled, story.id, chapter.id, chapter.title, chapter.backgroundKeywords, story.description])
-
-  const backgroundUrl = resolvedBackgroundUrl || getBackgroundUrl()
+  const backgroundUrl = getBackgroundUrl()
   const backgroundStyle = backgroundUrl ? {
     backgroundImage: `url(${backgroundUrl})`,
     backgroundSize: 'cover',
@@ -293,6 +270,15 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
       onClick={!started ? enterStory : undefined}
     >
       <div className={`absolute inset-0 ${started ? 'bg-black/50' : 'bg-black/60'}`} />
+
+      {/* Home link */}
+      <Link
+        href="/"
+        className="absolute top-4 left-4 z-30 px-4 py-2 text-white/70 hover:text-white text-sm transition-all"
+        onClick={(e) => e.stopPropagation()}
+      >
+        ← Home
+      </Link>
 
       {toasts.length > 0 && (
         <div className="fixed top-4 right-4 z-50 space-y-2">
@@ -322,6 +308,21 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
         >
           <h1 className="text-4xl font-serif text-white">{chapter.title}</h1>
           <p className="text-white/60 text-lg">{story.title}</p>
+
+          {/* Book Progress */}
+          <div className="w-full space-y-2 pt-2">
+            <div className="flex justify-between text-xs text-white/60">
+              <span>Book Progress</span>
+              <span>{completedChapters} / {totalChapters} chapters</span>
+            </div>
+            <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-white/70 rounded-full transition-all"
+                style={{ width: `${(completedChapters / totalChapters) * 100}%` }}
+              />
+            </div>
+          </div>
+
           <div className="pt-4 space-y-4 text-left">
             <div className="flex items-center justify-between bg-white/10 rounded-lg p-3">
               <span className="text-white/80 text-sm">Mode</span>
@@ -373,20 +374,6 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
                 </div>
               </div>
             )}
-            <div className="flex items-center justify-between bg-white/10 rounded-lg p-3">
-              <span className="text-white/80 text-sm">AI background</span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setAiBackgroundEnabled(!aiBackgroundEnabled)
-                }}
-                className={`px-3 py-1 rounded-full text-xs ${
-                  aiBackgroundEnabled ? 'bg-white text-black' : 'bg-white/10 text-white/70'
-                }`}
-              >
-                {aiBackgroundEnabled ? 'On' : 'Off'}
-              </button>
-            </div>
           </div>
           <div className="pt-8 flex flex-col items-center gap-3">
             <button
@@ -492,17 +479,23 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
                 </button>
               </div>
             )}
-            <div className="flex items-center gap-2 text-white/70 text-sm">
-              <span>Include background in recording</span>
-              <button
-                onClick={() => setIncludeBackground(!includeBackground)}
-                className={`px-3 py-1 rounded-full text-xs ${
-                  includeBackground ? 'bg-white text-black' : 'bg-white/10'
-                }`}
-              >
-                {includeBackground ? 'On' : 'Off'}
-              </button>
-            </div>
+            {mode === 'solo' ? (
+              <div className="flex items-center gap-2 text-white/70 text-sm">
+                <span>Include background in recording</span>
+                <button
+                  onClick={() => setIncludeBackground(!includeBackground)}
+                  className={`px-3 py-1 rounded-full text-xs ${
+                    includeBackground ? 'bg-white text-black' : 'bg-white/10'
+                  }`}
+                >
+                  {includeBackground ? 'On' : 'Off'}
+                </button>
+              </div>
+            ) : (
+              <div className="text-white/60 text-sm">
+                Background audio is included for two‑reader recordings
+              </div>
+            )}
             {/* Recording button */}
             <button
               onClick={() => (isRecording ? stopRecording() : startRecording())}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#f5f3f0"/>
+  <circle cx="50" cy="50" r="40" fill="#8b0000" opacity="0.1"/>
+  <!-- Book -->
+  <rect x="25" y="35" width="50" height="40" fill="#8b0000" rx="2"/>
+  <rect x="27" y="37" width="46" height="36" fill="#a52a2a"/>
+  <!-- Book spine -->
+  <rect x="25" y="35" width="5" height="40" fill="#6b0000"/>
+  <!-- Pages -->
+  <rect x="32" y="40" width="40" height="28" fill="#fffef5"/>
+  <line x1="35" y1="48" x2="68" y2="48" stroke="#e0d5c5" stroke-width="1"/>
+  <line x1="35" y1="53" x2="68" y2="53" stroke="#e0d5c5" stroke-width="1"/>
+  <line x1="35" y1="58" x2="60" y2="58" stroke="#e0d5c5" stroke-width="1"/>
+  <!-- Gold decoration on cover -->
+  <rect x="45" y="78" width="10" height="2" fill="#ffd700"/>
+  <circle cx="50" cy="82" r="3" fill="#ffd700"/>
+  <!-- Ribbon bookmark -->
+  <rect x="65" y="35" width="3" height="15" fill="#ffd700"/>
+  <polygon points="65,50 68,50 66.5,55" fill="#ffd700"/>
+</svg>

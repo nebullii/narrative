@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#f5f3f0"/>
+  <circle cx="50" cy="50" r="40" fill="#708090" opacity="0.15"/>
+  <!-- Chain links -->
+  <ellipse cx="30" cy="35" rx="10" ry="6" fill="none" stroke="#708090" stroke-width="4"/>
+  <ellipse cx="45" cy="45" rx="10" ry="6" fill="none" stroke="#708090" stroke-width="4" transform="rotate(30, 45, 45)"/>
+  <ellipse cx="55" cy="55" rx="10" ry="6" fill="none" stroke="#708090" stroke-width="4"/>
+  <ellipse cx="70" cy="65" rx="10" ry="6" fill="none" stroke="#708090" stroke-width="4" transform="rotate(-20, 70, 65)"/>
+  <!-- Lock box -->
+  <rect x="60" y="72" width="15" height="12" fill="#708090" rx="2"/>
+  <rect x="64" y="68" width="7" height="6" fill="none" stroke="#708090" stroke-width="2" rx="3"/>
+  <circle cx="67" cy="78" r="2" fill="#3a3532"/>
+</svg>

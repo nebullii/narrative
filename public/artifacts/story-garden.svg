@@ -1,19 +1,24 @@
-<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="1200" height="800" fill="#F6F1E9"/>
-  <rect x="120" y="120" width="960" height="520" rx="60" fill="#FFF7EA" stroke="#D7B58A" stroke-width="8"/>
-  <circle cx="260" cy="260" r="70" fill="#EED6B3"/>
-  <circle cx="420" cy="240" r="56" fill="#EED6B3"/>
-  <circle cx="580" cy="260" r="64" fill="#EED6B3"/>
-  <circle cx="740" cy="240" r="52" fill="#EED6B3"/>
-  <circle cx="900" cy="260" r="60" fill="#EED6B3"/>
-  <path d="M220 420C320 360 420 360 520 420C620 480 720 480 820 420C920 360 980 360 1020 400" stroke="#C79A61" stroke-width="10" stroke-linecap="round"/>
-  <path d="M240 470C340 420 440 420 540 470C640 520 740 520 840 470C940 420 1000 420 1040 450" stroke="#C79A61" stroke-width="8" stroke-linecap="round"/>
-  <circle cx="340" cy="520" r="28" fill="#F2D7B2"/>
-  <circle cx="520" cy="520" r="28" fill="#F2D7B2"/>
-  <circle cx="700" cy="520" r="28" fill="#F2D7B2"/>
-  <circle cx="880" cy="520" r="28" fill="#F2D7B2"/>
-  <rect x="240" y="560" width="720" height="80" rx="40" fill="#EED6B3"/>
-  <text x="600" y="612" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#7A5A32">
-    The Story Garden
-  </text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sgBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4fff2"/>
+      <stop offset="100%" stop-color="#d7f0dc"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="230" fill="url(#sgBg)" stroke="#5a7a4d" stroke-width="12"/>
+  <g fill="none" stroke="#5a7a4d" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M256 380 C250 320 240 290 196 256"/>
+    <path d="M256 380 C262 320 272 290 316 256"/>
+    <path d="M196 256 C188 210 212 184 256 178 C300 184 324 210 316 256"/>
+  </g>
+  <g fill="#7ccf8a" stroke="#4c6a3f" stroke-width="10">
+    <path d="M256 168 L284 214 L256 244 L228 214 Z"/>
+    <path d="M188 244 L220 286 L188 312 L156 286 Z"/>
+    <path d="M324 244 L356 286 L324 312 L292 286 Z"/>
+  </g>
+  <g fill="#fff2c5" stroke="#4c6a3f" stroke-width="8">
+    <circle cx="256" cy="204" r="18"/>
+    <circle cx="188" cy="274" r="14"/>
+    <circle cx="324" cy="274" r="14"/>
+  </g>
 </svg>

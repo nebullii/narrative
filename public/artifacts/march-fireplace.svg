@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#f5f3f0"/>
+  <!-- Warm glow -->
+  <circle cx="50" cy="60" r="35" fill="#ff8c00" opacity="0.1"/>
+  <!-- Fireplace frame -->
+  <rect x="20" y="30" width="60" height="55" fill="#8b7355" rx="3"/>
+  <rect x="25" y="35" width="50" height="45" fill="#3a3532"/>
+  <!-- Fire -->
+  <ellipse cx="50" cy="75" rx="20" ry="8" fill="#ff4500"/>
+  <ellipse cx="45" cy="68" rx="8" ry="15" fill="#ff8c00"/>
+  <ellipse cx="55" cy="68" rx="6" ry="12" fill="#ffd700"/>
+  <ellipse cx="50" cy="65" rx="4" ry="8" fill="#fff5cc"/>
+  <!-- Mantle decorations -->
+  <rect x="18" y="25" width="64" height="8" fill="#6b5d54"/>
+  <rect x="30" y="18" width="8" height="8" fill="#8b0000" rx="1"/>
+  <rect x="62" y="18" width="8" height="8" fill="#2e4a2e" rx="1"/>
+  <!-- Warmth lines -->
+  <path d="M 35 55 Q 38 50 35 45" stroke="#ffd700" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <path d="M 65 55 Q 62 50 65 45" stroke="#ffd700" stroke-width="1.5" fill="none" opacity="0.5"/>
+</svg>

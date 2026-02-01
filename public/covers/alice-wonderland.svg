@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs>
+    <linearGradient id="wonderland" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8f4f8"/>
+      <stop offset="100%" style="stop-color:#b8d4e3"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="200" fill="url(#wonderland)"/>
+  <!-- Rabbit hole -->
+  <ellipse cx="200" cy="180" rx="60" ry="20" fill="#3a3532"/>
+  <ellipse cx="200" cy="180" rx="50" ry="15" fill="#1a1a1a"/>
+  <!-- Playing cards floating -->
+  <g transform="rotate(-15, 100, 80)">
+    <rect x="80" y="50" width="40" height="60" fill="white" rx="4"/>
+    <text x="88" y="80" fill="#c41e3a" font-size="24">♥</text>
+  </g>
+  <g transform="rotate(20, 300, 70)">
+    <rect x="280" y="40" width="40" height="60" fill="white" rx="4"/>
+    <text x="288" y="70" fill="#1a1a1a" font-size="24">♠</text>
+  </g>
+  <!-- White rabbit silhouette -->
+  <ellipse cx="200" cy="120" rx="25" ry="30" fill="white"/>
+  <ellipse cx="200" cy="85" rx="18" ry="15" fill="white"/>
+  <ellipse cx="188" cy="55" rx="6" ry="20" fill="white"/>
+  <ellipse cx="212" cy="55" rx="6" ry="20" fill="white"/>
+  <ellipse cx="188" cy="58" rx="4" ry="15" fill="#ffb6c1"/>
+  <ellipse cx="212" cy="58" rx="4" ry="15" fill="#ffb6c1"/>
+  <!-- Pocket watch -->
+  <circle cx="230" cy="110" r="12" fill="#ffd700" stroke="#b8860b" stroke-width="2"/>
+  <circle cx="230" cy="110" r="8" fill="white"/>
+  <line x1="230" y1="110" x2="230" y2="104" stroke="#3a3532" stroke-width="1.5"/>
+  <line x1="230" y1="110" x2="235" y2="110" stroke="#3a3532" stroke-width="1"/>
+</svg>

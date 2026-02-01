@@ -1,0 +1,80 @@
+{
+  "id": "alice-wonderland",
+  "title": "Alice's Adventures in Wonderland",
+  "author": "Lewis Carroll",
+  "description": "Follow Alice down the rabbit hole into a fantastical world of curious creatures and impossible things.",
+  "coverImage": "/covers/alice-wonderland.svg",
+  "rewards": {
+    "chapter": {
+      "icon": "/rewards/chapter-sticker.svg",
+      "title": "Silver Book"
+    },
+    "story": {
+      "icon": "/rewards/story-badge.svg",
+      "title": "Golden Book"
+    },
+    "book": {
+      "icon": "/rewards/book-trophy.svg",
+      "title": "Diamond Book"
+    }
+  },
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Down the Rabbit-Hole",
+      "backgroundKeywords": "meadow riverside summer afternoon dreamy",
+      "paragraphs": [
+        {
+          "id": "p1",
+          "reader": 1,
+          "text": "Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do. Once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it."
+        },
+        {
+          "id": "p2",
+          "reader": 2,
+          "text": "So she was considering in her own mind, whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her."
+        },
+        {
+          "id": "p3",
+          "reader": 1,
+          "text": "There was nothing so very remarkable in that. Nor did Alice think it so very much out of the way to hear the Rabbit say to itself, 'Oh dear! Oh dear! I shall be late!'"
+        },
+        {
+          "id": "p4",
+          "reader": 2,
+          "text": "But when the Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then hurried on, Alice started to her feet. Burning with curiosity, she ran across the field after it."
+        }
+      ],
+      "artifact": {
+        "type": "image",
+        "url": "/artifacts/white-rabbit.svg"
+      }
+    },
+    {
+      "id": 2,
+      "title": "The Pool of Tears",
+      "backgroundKeywords": "underground tunnel mysterious dark curious",
+      "paragraphs": [
+        {
+          "id": "p1",
+          "reader": 1,
+          "text": "Curiouser and curiouser!' cried Alice. She was so much surprised, that for the moment she quite forgot how to speak good English."
+        },
+        {
+          "id": "p2",
+          "reader": 2,
+          "text": "'Now I'm opening out like the largest telescope that ever was! Good-bye, feet!' For when she looked down at her feet, they seemed to be almost out of sight, they were getting so far off."
+        },
+        {
+          "id": "p3",
+          "reader": 1,
+          "text": "Just then her head struck against the roof of the hall. In fact she was now more than nine feet high, and she at once took up the little golden key and hurried off to the garden door."
+        }
+      ],
+      "artifact": {
+        "type": "image",
+        "url": "/artifacts/golden-key.svg"
+      }
+    }
+  ]
+}

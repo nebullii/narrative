@@ -1,0 +1,80 @@
+{
+  "id": "christmas-carol",
+  "title": "A Christmas Carol",
+  "author": "Charles Dickens",
+  "description": "The timeless tale of Ebenezer Scrooge and the three spirits who change his heart on Christmas Eve.",
+  "coverImage": "/covers/christmas-carol.svg",
+  "rewards": {
+    "chapter": {
+      "icon": "/rewards/chapter-sticker.svg",
+      "title": "Silver Book"
+    },
+    "story": {
+      "icon": "/rewards/story-badge.svg",
+      "title": "Golden Book"
+    },
+    "book": {
+      "icon": "/rewards/book-trophy.svg",
+      "title": "Diamond Book"
+    }
+  },
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Marley's Ghost",
+      "backgroundKeywords": "victorian london foggy winter evening",
+      "paragraphs": [
+        {
+          "id": "p1",
+          "reader": 1,
+          "text": "Marley was dead, to begin with. There is no doubt whatever about that. Old Marley was as dead as a door-nail."
+        },
+        {
+          "id": "p2",
+          "reader": 2,
+          "text": "Scrooge knew he was dead? Of course he did. Scrooge and he were partners for I don't know how many years. Scrooge was his sole executor, his sole friend, and sole mourner."
+        },
+        {
+          "id": "p3",
+          "reader": 1,
+          "text": "Oh! But he was a tight-fisted hand at the grindstone, Scrooge! A squeezing, wrenching, grasping, scraping, clutching, covetous old sinner!"
+        },
+        {
+          "id": "p4",
+          "reader": 2,
+          "text": "External heat and cold had little influence on Scrooge. No warmth could warm, no wintry weather chill him. No wind that blew was bitterer than he."
+        }
+      ],
+      "artifact": {
+        "type": "image",
+        "url": "/artifacts/marley-chain.svg"
+      }
+    },
+    {
+      "id": 2,
+      "title": "The First of the Three Spirits",
+      "backgroundKeywords": "candlelight bedroom midnight ghostly",
+      "paragraphs": [
+        {
+          "id": "p1",
+          "reader": 1,
+          "text": "When Scrooge awoke, it was so dark that he could scarcely distinguish the transparent window from the walls of his chamber. The chimes of a neighbouring church struck the four quarters."
+        },
+        {
+          "id": "p2",
+          "reader": 2,
+          "text": "The curtains of his bed were drawn aside by a strange figure\u2014like a child, yet not so like a child as like an old man. Its hair was white as if with age, yet the face had not a wrinkle in it."
+        },
+        {
+          "id": "p3",
+          "reader": 1,
+          "text": "'I am the Ghost of Christmas Past,' said the Spirit. 'Your past. Rise, and walk with me!'"
+        }
+      ],
+      "artifact": {
+        "type": "image",
+        "url": "/artifacts/spirit-candle.svg"
+      }
+    }
+  ]
+}

@@ -74,6 +74,7 @@ export default function SoloReadingClient({ story }) {
   if (showChapterEnd) {
     return (
       <ChapterEnd
+        story={story}
         chapter={story.chapters[currentChapter]}
         onNext={handleNextChapter}
         isLastChapter={currentChapter === story.chapters.length - 1}

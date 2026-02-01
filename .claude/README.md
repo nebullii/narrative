@@ -8,12 +8,10 @@ These files define how to build and evolve Narratai.
 
 ## Supporting
 - `gamification.md`: reward rules (no gamification)
-- `database-schema.md`: future-only backend schema placeholder
 - `adversarial_tester.prompt.md`: security and abuse testing prompt
 
 ## Planning
 - `tasks.md`: roadmap and next steps
-- `prompts.md`: reusable prompts for common work
 
 ## Usage
 

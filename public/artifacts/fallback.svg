@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="fbBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7f1e8"/>
+      <stop offset="100%" stop-color="#e7d6c4"/>
+    </linearGradient>
+  </defs>
+  <rect x="36" y="36" width="440" height="440" rx="40" fill="url(#fbBg)" stroke="#8a6b4f" stroke-width="12"/>
+  <g fill="none" stroke="#8a6b4f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M140 200 H372"/>
+    <path d="M140 260 H372"/>
+    <path d="M140 320 H300"/>
+  </g>
+  <g fill="#8a6b4f">
+    <circle cx="180" cy="150" r="18"/>
+    <circle cx="256" cy="150" r="18"/>
+    <circle cx="332" cy="150" r="18"/>
+  </g>
+  <text x="256" y="400" text-anchor="middle" font-family="serif" font-size="22" fill="#8a6b4f">
+    Artifact Unavailable
+  </text>
+</svg>

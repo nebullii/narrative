@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs>
+    <linearGradient id="winter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a237e"/>
+      <stop offset="100%" style="stop-color:#0d1421"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="200" fill="url(#winter)"/>
+  <!-- Snow -->
+  <circle cx="50" cy="30" r="2" fill="white" opacity="0.8"/>
+  <circle cx="100" cy="50" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="150" cy="25" r="2" fill="white" opacity="0.7"/>
+  <circle cx="200" cy="45" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="250" cy="20" r="2" fill="white" opacity="0.6"/>
+  <circle cx="300" cy="40" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="350" cy="35" r="2" fill="white" opacity="0.8"/>
+  <circle cx="80" cy="70" r="1" fill="white" opacity="0.5"/>
+  <circle cx="320" cy="60" r="1.5" fill="white" opacity="0.6"/>
+  <!-- Victorian buildings silhouette -->
+  <rect x="40" y="120" width="50" height="80" fill="#0a0a15"/>
+  <rect x="35" y="110" width="60" height="15" fill="#0a0a15"/>
+  <rect x="100" y="100" width="40" height="100" fill="#0a0a15"/>
+  <rect x="150" y="130" width="60" height="70" fill="#0a0a15"/>
+  <rect x="220" y="110" width="45" height="90" fill="#0a0a15"/>
+  <rect x="275" y="120" width="55" height="80" fill="#0a0a15"/>
+  <rect x="340" y="105" width="50" height="95" fill="#0a0a15"/>
+  <!-- Windows with warm light -->
+  <rect x="55" y="140" width="8" height="10" fill="#ffd54f"/>
+  <rect x="70" y="140" width="8" height="10" fill="#ffd54f"/>
+  <rect x="110" y="120" width="8" height="10" fill="#ffd54f"/>
+  <rect x="165" y="150" width="10" height="12" fill="#ffd54f"/>
+  <rect x="185" y="150" width="10" height="12" fill="#ffd54f"/>
+  <rect x="235" y="130" width="8" height="10" fill="#ffd54f"/>
+  <rect x="290" y="145" width="10" height="12" fill="#ffd54f"/>
+  <rect x="310" y="145" width="10" height="12" fill="#ffd54f"/>
+  <!-- Ghost figure -->
+  <ellipse cx="200" cy="75" rx="20" ry="25" fill="white" opacity="0.3"/>
+  <ellipse cx="200" cy="55" rx="12" ry="12" fill="white" opacity="0.3"/>
+  <!-- Candle glow -->
+  <circle cx="200" cy="85" r="30" fill="#ffd54f" opacity="0.15"/>
+</svg>

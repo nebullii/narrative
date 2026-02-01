@@ -2,21 +2,15 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { getAllRecordings, clearAllRecordings } from '@/lib/audioStorage'
-import { getAchievements } from '@/lib/achievements'
 
 export default function Journal({ progress }) {
   const [recordings, setRecordings] = useState([])
   const [playing, setPlaying] = useState(null)
   const audioRef = useRef(null)
   const audioUrlRef = useRef(null)
-  const [achievements, setAchievements] = useState([])
 
   useEffect(() => {
     getAllRecordings().then(setRecordings).catch(console.error)
-  }, [])
-  
-  useEffect(() => {
-    setAchievements(getAchievements())
   }, [])
 
   const stopPlayback = () => {
@@ -53,13 +47,9 @@ export default function Journal({ progress }) {
     audio.play()
     setPlaying(recording.key)
   }
-
   const normalizeArtifactUrl = (url) => {
-    const map = {
-      '/artifacts/story-garden.jpg': '/artifacts/story-garden.svg',
-      '/artifacts/mary-arrival.jpg': '/artifacts/mary-arrival.svg'
-    }
-    return map[url] || url
+    // Convert jpg references to svg if needed
+    return url?.replace('.jpg', '.svg') || url
   }
 
   // Parse recording key like "secret-garden-ch1-p1"
@@ -76,156 +66,107 @@ export default function Journal({ progress }) {
     }
   }
 
-  return (
-    <div className="space-y-12">
-      {/* Achievements */}
-      {achievements.length > 0 && (
-        <div className="space-y-6">
-          <h2 className="text-3xl font-serif text-calm-text border-b-2 border-calm-accent pb-2">
-            Achievements
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {achievements.map((achievement) => (
-              <div
-                key={achievement.id}
-                className="border-2 border-calm-accent rounded-lg p-4 flex items-center gap-4 bg-white"
-              >
-                <img src={achievement.icon} alt={achievement.title} className="w-14 h-14" />
-                <div>
-                  <p className="font-medium text-calm-text">{achievement.title}</p>
-                  <p className="text-sm text-calm-accent">{achievement.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+  const storiesWithArtifacts = Object.entries(progress).filter(
+    ([, storyProgress]) => storyProgress.artifacts.length > 0
+  )
 
-      {/* Audio Recordings Section */}
+  return (
+    <div className="space-y-10">
       {recordings.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between gap-4 border-b-2 border-calm-accent pb-2">
-            <h2 className="text-3xl font-serif text-calm-text">Your Recordings</h2>
+        <section className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-calm-accent">Recordings</p>
+              <h2 className="text-2xl md:text-3xl font-['Cormorant_Garamond'] font-semibold text-calm-text">
+                Your Audio Notes
+              </h2>
+            </div>
             <button
               onClick={async () => {
                 stopPlayback()
                 await clearAllRecordings()
                 setRecordings([])
               }}
-              className="text-sm text-calm-accent underline underline-offset-4"
+              className="rounded-full border border-calm-accent/50 px-4 py-2 text-xs uppercase tracking-[0.25em] text-calm-accent transition-all hover:bg-calm-accent hover:text-white"
             >
               Clear all
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {recordings.map((recording) => {
               const info = parseKey(recording.key)
+              const isPlaying = playing === recording.key
               return (
                 <button
                   key={recording.key}
                   onClick={() => playRecording(recording)}
-                  className={`p-4 rounded-lg border-2 text-left transition-all ${
-                    playing === recording.key
-                      ? 'border-player bg-player/10'
-                      : 'border-calm-accent hover:bg-calm-accent/10'
-                  }`}
+                  className="flex items-center justify-between gap-4 rounded-xl border border-calm-accent/30 bg-white/70 px-4 py-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_-24px_rgba(58,53,50,0.45)]"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">
-                      {playing === recording.key ? '⏸️' : '▶️'}
-                    </span>
-                    <div>
-                      <p className="font-medium text-calm-text">
-                        Chapter {info.chapter}{info.paragraph ? `, Paragraph ${info.paragraph}` : ' (Full Chapter)'}
-                      </p>
-                      <p className="text-sm text-calm-accent">{info.story}</p>
-                    </div>
+                  <div>
+                    <p className="font-medium text-calm-text">
+                      Chapter {info.chapter}
+                      {info.paragraph ? `, Paragraph ${info.paragraph}` : ' (Full Chapter)'}
+                    </p>
+                    <p className="text-xs uppercase tracking-[0.25em] text-calm-text/50">
+                      {info.story}
+                    </p>
                   </div>
+                  <span className={`text-lg ${isPlaying ? 'text-player' : 'text-calm-accent'}`}>
+                    {isPlaying ? '⏸️' : '▶️'}
+                  </span>
                 </button>
               )
             })}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Story Progress */}
-      {Object.entries(progress).map(([storyId, storyProgress]) => (
-        <div key={storyId} className="space-y-6">
-          <h2 className="text-3xl font-serif text-calm-text border-b-2 border-calm-accent pb-2">
-            {storyProgress.title || storyId}
-          </h2>
-
-          {/* Progress summary */}
-          <div className="bg-calm-accent bg-opacity-10 rounded-lg p-6 space-y-1">
-            {storyProgress.author && (
-              <p className="text-calm-text">
-                <span className="font-medium">Author:</span> {storyProgress.author}
-              </p>
-            )}
-            <p className="text-calm-text">
-              <span className="font-medium">Chapters completed:</span>{' '}
-              {storyProgress.completedChapters.length}
-            </p>
-            <p className="text-calm-text">
-              <span className="font-medium">Artifacts collected:</span>{' '}
-              {storyProgress.artifacts.length}
-            </p>
+      {storiesWithArtifacts.map(([storyId, storyProgress]) => (
+        <section key={storyId} className="space-y-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-calm-accent">Artifacts</p>
+            <h2 className="text-2xl md:text-3xl font-['Cormorant_Garamond'] font-semibold text-calm-text">
+              {storyProgress.title || storyId}
+            </h2>
           </div>
-
-          {/* Artifacts */}
-          {storyProgress.artifacts.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-serif text-calm-text">Collected Artifacts</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {storyProgress.artifacts.map((artifact, index) => (
-                  <div
-                    key={index}
-                    className="border-2 border-calm-accent rounded-lg p-6 space-y-3"
-                  >
-                    <div className="w-full overflow-hidden rounded-lg border border-calm-accent/30 bg-white">
-                      <img
-                        src={normalizeArtifactUrl(artifact.url)}
-                        alt={artifact.caption}
-                        className="w-full h-48 object-cover"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.src = '/artifacts/story-garden.svg'
-                        }}
-                      />
-                    </div>
-                    <p className="text-calm-text italic text-center">
-                      {artifact.caption}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Reflections */}
-          {Object.keys(storyProgress.reflections).length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-serif text-calm-text">Your Reflections</h3>
-              {Object.entries(storyProgress.reflections).map(([chapterId, reflection]) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+            {storyProgress.artifacts.map((artifact, index) => {
+              const rotations = [-4, 3, -2, 5, -3, 2]
+              const tilt = rotations[index % rotations.length]
+              return (
                 <div
-                  key={chapterId}
-                  className="bg-white border-2 border-calm-accent rounded-lg p-6"
+                  key={index}
+                  className="relative"
+                  style={{ transform: `rotate(${tilt}deg)` }}
                 >
-                  <p className="text-sm text-calm-accent mb-2">
-                    Chapter {chapterId}
-                  </p>
-                  <p className="text-calm-text">{reflection}</p>
+                  <div className="rounded-[26px] bg-white p-[6px] shadow-[0_18px_30px_-14px_rgba(58,53,50,0.55)] ring-1 ring-black/5 transition-transform hover:-translate-y-1 hover:rotate-0">
+                    <div className="rounded-[22px] bg-white p-[3px] ring-1 ring-black/5">
+                      <div className="overflow-hidden rounded-[18px] bg-white">
+                        <img
+                          src={normalizeArtifactUrl(artifact.url)}
+                          alt={artifact.caption}
+                          className="h-28 w-full object-cover"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.src = '/artifacts/fallback.svg'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              )
+            })}
+          </div>
+        </section>
       ))}
 
-      {/* Empty state */}
-      {recordings.length === 0 && Object.keys(progress).length === 0 && achievements.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-calm-accent text-lg">No recordings yet. Start reading to create your journal!</p>
+      {storiesWithArtifacts.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-calm-accent/60 bg-white/60 p-8 text-center">
+          <p className="text-sm uppercase tracking-[0.3em] text-calm-accent">No artifacts yet</p>
+          <p className="mt-3 text-calm-text/70">
+            Start reading to collect your first artifact.
+          </p>
         </div>
       )}
     </div>

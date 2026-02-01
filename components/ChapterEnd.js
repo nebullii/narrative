@@ -1,14 +1,34 @@
 'use client'
 
-export default function ChapterEnd({ chapter, onNext, isLastChapter, currentChapterIndex, totalChapters, earnedAchievements = [] }) {
+import { useState } from 'react'
+
+const DEFAULT_REWARDS = {
+  chapter: {
+    icon: '/rewards/chapter-sticker.svg',
+    title: 'Silver Book'
+  },
+  story: {
+    icon: '/rewards/story-badge.svg',
+    title: 'Golden Book'
+  },
+  book: {
+    icon: '/rewards/book-trophy.svg',
+    title: 'Diamond Book'
+  }
+}
+
+export default function ChapterEnd({ story, chapter, onNext, isLastChapter, currentChapterIndex, totalChapters, earnedAchievements = [] }) {
+  const [showRewards, setShowRewards] = useState(false)
   const [showArtifact, setShowArtifact] = useState(false)
+  const rewardConfig = {
+    ...DEFAULT_REWARDS,
+    ...(story?.rewards || {}),
+    ...(chapter?.rewards || {})
+  }
 
   const normalizeArtifactUrl = (url) => {
-    const map = {
-      '/artifacts/story-garden.jpg': '/artifacts/story-garden.svg',
-      '/artifacts/mary-arrival.jpg': '/artifacts/mary-arrival.svg'
-    }
-    return map[url] || url
+    // Convert jpg references to svg if needed
+    return url?.replace('.jpg', '.svg') || url
   }
 
   const handleContinue = () => {
@@ -42,14 +62,13 @@ export default function ChapterEnd({ chapter, onNext, isLastChapter, currentChap
           </div>
         </div>
 
-        {/* Artifact reveal */}
-        {!showArtifact ? (
+        {!showRewards ? (
           <div className="text-center py-12">
             <button
-              onClick={() => setShowArtifact(true)}
+              onClick={() => setShowRewards(true)}
               className="px-12 py-4 bg-calm-accent text-white rounded-lg text-lg hover:bg-opacity-90 transition-all"
             >
-              Reveal Artifact
+              Reveal Reward
             </button>
           </div>
         ) : (
@@ -72,52 +91,84 @@ export default function ChapterEnd({ chapter, onNext, isLastChapter, currentChap
             )}
 
             {/* Rewards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white border border-calm-accent/30 rounded-lg p-4 text-center">
-                <img
-                  src="/rewards/chapter-sticker.svg"
-                  alt="Silver book sticker"
-                  className="w-full h-28 object-contain"
-                  loading="lazy"
-                />
-                <p className="text-sm text-calm-text mt-2">Silver Book</p>
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+              <div className="text-center">
+                <div className="relative mx-auto h-28 w-28">
+                  <div className="absolute inset-0 rounded-full bg-calm-accent/10 blur-xl" />
+                  <div className="absolute -bottom-2 left-1/2 h-5 w-20 -translate-x-1/2 rounded-full bg-calm-text/20 blur-sm" />
+                  <img
+                    src={rewardConfig.chapter.icon}
+                    alt={rewardConfig.chapter.title}
+                    className="relative z-10 h-28 w-28 object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.28)]"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-calm-accent/30 bg-white/70 px-3 py-1 text-xs text-calm-text">
+                  <span className="h-2 w-2 rounded-full bg-[#d4af37]" />
+                  Chapter Reward
+                </div>
+                <p className="text-sm text-calm-text mt-2">{rewardConfig.chapter.title}</p>
               </div>
-              <div className={`bg-white border border-calm-accent/30 rounded-lg p-4 text-center ${isLastChapter ? '' : 'opacity-40'}`}>
-                <img
-                  src="/rewards/story-badge.svg"
-                  alt="Golden book badge"
-                  className="w-full h-28 object-contain"
-                  loading="lazy"
-                />
-                <p className="text-sm text-calm-text mt-2">Golden Book</p>
+              <div className={`text-center ${isLastChapter ? '' : 'opacity-40'}`}>
+                <div className="relative mx-auto h-28 w-28">
+                  <div className="absolute inset-0 rounded-full bg-[#f5c15d]/20 blur-xl" />
+                  <div className="absolute -bottom-2 left-1/2 h-5 w-20 -translate-x-1/2 rounded-full bg-calm-text/20 blur-sm" />
+                  <img
+                    src={rewardConfig.story.icon}
+                    alt={rewardConfig.story.title}
+                    className="relative z-10 h-28 w-28 object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.28)]"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-calm-accent/30 bg-white/70 px-3 py-1 text-xs text-calm-text">
+                  <span className="h-2 w-2 rounded-full bg-[#f5b942]" />
+                  Story Reward
+                </div>
+                <p className="text-sm text-calm-text mt-2">{rewardConfig.story.title}</p>
               </div>
-              <div className={`bg-white border border-calm-accent/30 rounded-lg p-4 text-center ${isLastChapter ? '' : 'opacity-40'}`}>
-                <img
-                  src="/rewards/book-trophy.svg"
-                  alt="Diamond book trophy"
-                  className="w-full h-28 object-contain"
-                  loading="lazy"
-                />
-                <p className="text-sm text-calm-text mt-2">Diamond Book</p>
+              <div className={`text-center ${isLastChapter ? '' : 'opacity-40'}`}>
+                <div className="relative mx-auto h-28 w-28">
+                  <div className="absolute inset-0 rounded-full bg-[#8ab6ff]/20 blur-xl" />
+                  <div className="absolute -bottom-2 left-1/2 h-5 w-20 -translate-x-1/2 rounded-full bg-calm-text/20 blur-sm" />
+                  <img
+                    src={rewardConfig.book.icon}
+                    alt={rewardConfig.book.title}
+                    className="relative z-10 h-28 w-28 object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.28)]"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-calm-accent/30 bg-white/70 px-3 py-1 text-xs text-calm-text">
+                  <span className="h-2 w-2 rounded-full bg-[#7aa9ff]" />
+                  Book Reward
+                </div>
+                <p className="text-sm text-calm-text mt-2">{rewardConfig.book.title}</p>
               </div>
             </div>
 
-            <div className="bg-calm-accent bg-opacity-10 rounded-lg p-6 text-center">
-              <div className="w-full max-w-xl mx-auto overflow-hidden rounded-lg border border-calm-accent/30 bg-white">
-                <img
-                  src={normalizeArtifactUrl(chapter.artifact.url)}
-                  alt={chapter.artifact.caption}
-                  className="w-full h-auto object-cover"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.src = '/artifacts/story-garden.svg'
-                  }}
-                />
+            {!showArtifact ? (
+              <div className="text-center pt-2">
+                <button
+                  onClick={() => setShowArtifact(true)}
+                  className="px-10 py-3 bg-calm-accent text-white rounded-lg text-lg hover:bg-opacity-90 transition-all"
+                >
+                  Reveal Artifact
+                </button>
               </div>
-              <p className="text-calm-text italic mt-4">
-                {chapter.artifact.caption}
-              </p>
-            </div>
+            ) : (
+              <div className="bg-calm-accent bg-opacity-10 rounded-lg p-6 text-center">
+                <div className="w-full max-w-xl mx-auto overflow-hidden rounded-lg border border-calm-accent/30 bg-white">
+                  <img
+                    src={normalizeArtifactUrl(chapter.artifact.url)}
+                    alt={chapter.artifact.caption}
+                    className="w-full h-auto object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = '/artifacts/fallback.svg'
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Continue button */}
             <div className="text-center pt-4">
