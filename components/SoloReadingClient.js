@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReadingScreen from './ReadingScreen'
 import ChapterEnd from './ChapterEnd'
@@ -11,6 +11,18 @@ export default function SoloReadingClient({ story }) {
   const [currentChapter, setCurrentChapter] = useState(0)
   const [currentParagraph, setCurrentParagraph] = useState(0)
   const [showChapterEnd, setShowChapterEnd] = useState(false)
+  const [resumeLoaded, setResumeLoaded] = useState(false)
+
+  useEffect(() => {
+    const progress = JSON.parse(localStorage.getItem('narratai-progress') || '{}')
+    const saved = progress?.[story.id]?.lastPosition
+    if (saved && Number.isInteger(saved.chapter) && Number.isInteger(saved.paragraph)) {
+      setCurrentChapter(Math.min(saved.chapter, story.chapters.length - 1))
+      const maxParagraph = story.chapters[saved.chapter]?.paragraphs?.length || 0
+      setCurrentParagraph(Math.min(saved.paragraph, Math.max(0, maxParagraph - 1)))
+    }
+    setResumeLoaded(true)
+  }, [story.id, story.chapters])
 
   const saveProgress = () => {
     const progress = JSON.parse(localStorage.getItem('narratai-progress') || '{}')
@@ -35,6 +47,11 @@ export default function SoloReadingClient({ story }) {
     if (!progress[story.id].completedChapters.includes(chapterId)) {
       progress[story.id].completedChapters.push(chapterId)
       progress[story.id].artifacts.push(story.chapters[currentChapter].artifact)
+    }
+
+    progress[story.id].lastPosition = {
+      chapter: currentChapter,
+      paragraph: currentParagraph
     }
 
     localStorage.setItem('narratai-progress', JSON.stringify(progress))
@@ -70,6 +87,25 @@ export default function SoloReadingClient({ story }) {
       router.push('/journal')
     }
   }
+
+  useEffect(() => {
+    if (!resumeLoaded) return
+    const progress = JSON.parse(localStorage.getItem('narratai-progress') || '{}')
+    if (!progress[story.id]) {
+      progress[story.id] = {
+        title: story.title,
+        author: story.author,
+        completedChapters: [],
+        artifacts: [],
+        reflections: {}
+      }
+    }
+    progress[story.id].lastPosition = {
+      chapter: currentChapter,
+      paragraph: currentParagraph
+    }
+    localStorage.setItem('narratai-progress', JSON.stringify(progress))
+  }, [currentChapter, currentParagraph, resumeLoaded, story.id, story.title, story.author])
 
   if (showChapterEnd) {
     return (

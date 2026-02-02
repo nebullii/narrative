@@ -1,14 +1,21 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Narratai - Interactive Storytelling',
-  description: 'A calm, meaningful reading experience',
+  title: 'StoryVoice - Read Aloud & Record Stories',
+  description: 'Practice reading aloud or record bedtime stories for your loved ones',
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="min-h-screen">{children}</body>
     </html>
   )
 }

@@ -19,26 +19,25 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
   const [mode, setMode] = useState('solo')
   const [readerNames, setReaderNames] = useState({ 1: 'Reader 1', 2: 'Reader 2' })
   const [activeReader, setActiveReader] = useState(1)
-  const [includeBackground, setIncludeBackground] = useState(true)
   const [toasts, setToasts] = useState([])
   const [completedChapters, setCompletedChapters] = useState(0)
+  // DEBUG STATE
+  const [debugLogs, setDebugLogs] = useState([])
+
+  const addLog = (msg) => {
+    console.log(msg)
+    setDebugLogs(prev => [...prev.slice(-4), msg]) // Keep last 5 logs
+  }
 
   // Refs
-  const ambientRef = useRef(null)
   const mediaRecorderRef = useRef(null)
   const chunksRef = useRef([])
   const streamRef = useRef(null)
-  const audioContextRef = useRef(null)
-  const micSourceRef = useRef(null)
-  const ambientSourceRef = useRef(null)
-  const destinationRef = useRef(null)
-  const micGainRef = useRef(null)
-  const ambientGainRef = useRef(null)
   const isMountedRef = useRef(true)
 
   // Check for existing recording
   useEffect(() => {
-    getAudio(audioKey).then(audio => setHasRecording(!!audio)).catch(() => {})
+    getAudio(audioKey).then(audio => setHasRecording(!!audio)).catch(() => { })
   }, [audioKey])
 
   // Load book progress from localStorage
@@ -64,35 +63,24 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
     const timer = setTimeout(() => setTextVisible(true), 100)
     return () => clearTimeout(timer)
   }, [currentParagraph])
-  
+
   useEffect(() => {
     setRecordingError('')
   }, [currentParagraph])
 
-  useEffect(() => {
-    if (mode === 'duo' && !includeBackground) {
-      setIncludeBackground(true)
-    }
-  }, [mode, includeBackground])
 
   useEffect(() => {
     return () => {
       isMountedRef.current = false
-      if (mediaRecorderRef.current && isRecording) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
         mediaRecorderRef.current.stop()
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop())
       }
     }
-  }, [isRecording])
+  }, [])  // Only cleanup on unmount, not on isRecording change
 
-  // Ensure ambient audio continues across chapter changes
-  useEffect(() => {
-    if (!started || !ambientRef.current) return
-    ambientRef.current.volume = 0.25
-    ambientRef.current.play().catch(() => {})
-  }, [started, chapter.ambientAudio])
 
   const ensureMicPermission = async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -105,7 +93,16 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
       setMicReady(true)
       return true
     } catch (error) {
-      setRecordingError('Microphone permission denied. Please allow access and try again.')
+      console.error('Mic permission error:', error)
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        setRecordingError('Microphone permission denied. Please allow access in browser settings.')
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        setRecordingError('No microphone found. Please connect a microphone.')
+      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+        setRecordingError('Microphone is busy or not readable. Try closing other apps using it.')
+      } else {
+        setRecordingError('Could not access microphone. Please check your system settings.')
+      }
       return false
     }
   }
@@ -116,10 +113,6 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
     if (!micReady) {
       await ensureMicPermission()
     }
-    if (ambientRef.current) {
-      ambientRef.current.volume = 0.25
-      ambientRef.current.play().catch(() => {})
-    }
   }
 
   const startRecording = async () => {
@@ -127,58 +120,27 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
     try {
       if (!window.MediaRecorder) {
         setRecordingError('Recording is not supported in this browser.')
+        addLog('MediaRecorder not supported')
         return
       }
       if (!micReady) {
+        addLog('Mic not ready, ensuring permission...')
         const ok = await ensureMicPermission()
-        if (!ok) return
-      }
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          sampleRate: 48000,
-          channelCount: 1,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
+        if (!ok) {
+          addLog('Mic permission failed')
+          return
         }
-      })
+      }
+
+      // Get microphone stream
+      addLog('Requesting getUserMedia...')
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
+      addLog('Stream obtained')
 
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)()
-      }
-      const audioContext = audioContextRef.current
-      await audioContext.resume()
-
-      destinationRef.current = audioContext.createMediaStreamDestination()
-      micSourceRef.current = audioContext.createMediaStreamSource(stream)
-      micGainRef.current = audioContext.createGain()
-      micGainRef.current.gain.value = 1
-      micSourceRef.current.connect(micGainRef.current)
-      micGainRef.current.connect(destinationRef.current)
-
-      if (includeBackground && ambientRef.current) {
-        try {
-          ambientRef.current.play().catch(() => {})
-          if (!ambientSourceRef.current) {
-            ambientSourceRef.current = audioContext.createMediaElementSource(ambientRef.current)
-          }
-          ambientGainRef.current = audioContext.createGain()
-          ambientGainRef.current.gain.value = 0.6
-          ambientSourceRef.current.connect(ambientGainRef.current)
-          ambientGainRef.current.connect(destinationRef.current)
-        } catch (error) {
-          console.warn('Ambient mix error:', error)
-        }
-      }
-
-      // Try highest quality format available
-      let mimeType = 'audio/webm;codecs=opus'
-      const formats = [
-        'audio/webm;codecs=opus',
-        'audio/webm',
-        'audio/mp4;codecs=mp4a.40.2'
-      ]
+      // Find supported mime type - prefer mp4 for better compatibility
+      let mimeType = ''
+      const formats = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg']
       for (const format of formats) {
         if (MediaRecorder.isTypeSupported(format)) {
           mimeType = format
@@ -186,24 +148,47 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
         }
       }
 
-      const mediaRecorder = new MediaRecorder(destinationRef.current.stream, {
-        mimeType,
-        audioBitsPerSecond: 192000
-      })
+      addLog(`Starting recording with mimeType: ${mimeType}`)
 
+      // Record directly from microphone stream
+      const options = mimeType ? { mimeType } : {}
+      const mediaRecorder = new MediaRecorder(stream, options)
       mediaRecorderRef.current = mediaRecorder
       chunksRef.current = []
 
       mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data)
+        // console.log('Data available:', e.data.size, 'bytes')
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data)
+        }
       }
 
       mediaRecorder.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: mimeType })
-        await saveAudio(audioKey, blob)
+        addLog(`Recording stopped, chunks: ${chunksRef.current.length}`)
+        const finalMimeType = mediaRecorder.mimeType || 'audio/webm'
+        const blob = new Blob(chunksRef.current, { type: finalMimeType })
+        addLog(`Created blob: ${blob.size} bytes, type: ${finalMimeType}`)
+
+        if (blob.size === 0) {
+          setRecordingError('Recording failed - no audio captured. Check your microphone.')
+          addLog('Error: 0 byte blob')
+          stream.getTracks().forEach(track => track.stop())
+          return
+        }
+
         if (isMountedRef.current) {
           setHasRecording(true)
           setRecordingError('')
+        }
+        try {
+          addLog('Saving to DB...')
+          await saveAudio(audioKey, blob)
+          addLog('Audio saved successfully')
+        } catch (error) {
+          console.error('Save audio failed:', error)
+          addLog(`Save failed: ${error.message}`)
+        }
+        if (isMountedRef.current) {
           const earned = awardAchievement('first_recording')
           if (earned) {
             const toastId = `${earned.id}-${Date.now()}`
@@ -213,23 +198,40 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
             }, 2800)
           }
         }
-        if (micSourceRef.current) micSourceRef.current.disconnect()
-        if (micGainRef.current) micGainRef.current.disconnect()
-        if (ambientGainRef.current) ambientGainRef.current.disconnect()
-        if (ambientSourceRef.current) ambientSourceRef.current.disconnect()
         stream.getTracks().forEach(track => track.stop())
       }
 
-      mediaRecorder.start()
+      mediaRecorder.onerror = (e) => {
+        console.error('MediaRecorder error:', e)
+        setRecordingError('Recording error occurred')
+        addLog(`MediaRecorder error: ${e.error?.message || 'Unknown'}`)
+      }
+
+      // Start recording - collect data every 500ms for more reliable capture
+      mediaRecorder.start(500)
+      console.log('MediaRecorder started, state:', mediaRecorder.state)
       setIsRecording(true)
+      addLog('Started recording')
     } catch (error) {
       console.error('Microphone error:', error)
-      setRecordingError('Could not start recording. Check mic permission and try again.')
+      addLog(`Start error: ${error.name} - ${error.message}`)
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        setRecordingError('Microphone permission denied.')
+      } else if (error.name === 'NotFoundError') {
+        setRecordingError('No microphone found.')
+      } else {
+        setRecordingError('Could not start recording. Check mic permission.')
+      }
     }
   }
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
+      console.log('Stopping recording...')
+      // Request any remaining data before stopping
+      if (mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.requestData()
+      }
       mediaRecorderRef.current.stop()
       setIsRecording(false)
     }
@@ -238,8 +240,14 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
   const handleContinue = () => {
     setTextVisible(false)
     setTimeout(() => {
-      setHasRecording(false)
-      onCompleteChapter()
+      if (currentParagraph < chapter.paragraphs.length - 1) {
+        // Go to next paragraph
+        setHasRecording(false)
+        onSelectParagraph(currentParagraph + 1)
+      } else {
+        // Last paragraph - complete the chapter
+        onCompleteChapter()
+      }
     }, 300)
   }
 
@@ -263,21 +271,21 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
 
   return (
     <main
-      className={`min-h-screen flex flex-col relative ${
-        started ? '' : 'items-center justify-center cursor-pointer'
-      }`}
+      className={`min-h-screen flex flex-col relative ${started ? '' : 'items-center justify-center cursor-pointer'
+        }`}
       style={backgroundStyle}
       onClick={!started ? enterStory : undefined}
     >
-      <div className={`absolute inset-0 ${started ? 'bg-black/50' : 'bg-black/60'}`} />
+      <div className={`absolute inset-0 ${started ? 'bg-[#1b0f0b]/65' : 'bg-[#1b0f0b]/75'}`} />
 
       {/* Home link */}
       <Link
         href="/"
-        className="absolute top-4 left-4 z-30 px-4 py-2 text-white/70 hover:text-white text-sm transition-all"
+        className="absolute top-3 left-3 md:top-4 md:left-4 z-30 inline-flex items-center gap-1.5 md:gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-xs uppercase tracking-[0.15em] md:tracking-[0.25em] text-white/70 transition-all hover:border-white/50 hover:text-white"
         onClick={(e) => e.stopPropagation()}
       >
-        ← Home
+        <span aria-hidden="true">←</span>
+        Home
       </Link>
 
       {toasts.length > 0 && (
@@ -285,7 +293,7 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
           {toasts.map((toast) => (
             <div
               key={toast.toastId}
-              className="flex items-center gap-3 bg-white/90 text-calm-text border border-calm-accent/30 rounded-lg px-4 py-3 shadow-lg"
+              className="flex items-center gap-3 bg-white/95 text-calm-text border border-calm-accent/40 rounded-2xl px-4 py-3 shadow-[0_16px_40px_-30px_rgba(43,26,18,0.6)]"
             >
               <img src={toast.icon} alt={toast.title} className="w-10 h-10" />
               <div>
@@ -297,17 +305,14 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
         </div>
       )}
 
-      {chapter.ambientAudio && (
-        <audio ref={ambientRef} src={chapter.ambientAudio} loop preload="auto" />
-      )}
 
       {!started ? (
         <div
-          className="relative z-10 text-center space-y-6 px-8 w-full max-w-lg"
+          className="relative z-10 w-full max-w-lg mx-3 space-y-4 md:space-y-6 rounded-2xl md:rounded-3xl border border-white/10 bg-black/30 px-5 py-6 md:px-8 md:py-10 text-center backdrop-blur"
           onClick={(e) => e.stopPropagation()}
         >
-          <h1 className="text-4xl font-serif text-white">{chapter.title}</h1>
-          <p className="text-white/60 text-lg">{story.title}</p>
+          <h1 className="text-2xl md:text-4xl font-serif text-white">{chapter.title}</h1>
+          <p className="text-white/60 text-base md:text-lg">{story.title}</p>
 
           {/* Book Progress */}
           <div className="w-full space-y-2 pt-2">
@@ -317,7 +322,7 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
             </div>
             <div className="h-2 bg-white/20 rounded-full overflow-hidden">
               <div
-                className="h-full bg-white/70 rounded-full transition-all"
+                className="h-full rounded-full bg-gradient-to-r from-[#b08a3a] via-[#f0d28c] to-[#d2b15c] transition-all"
                 style={{ width: `${(completedChapters / totalChapters) * 100}%` }}
               />
             </div>
@@ -332,9 +337,8 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
                     e.stopPropagation()
                     setMode('solo')
                   }}
-                  className={`px-3 py-1 rounded-full text-xs ${
-                    mode === 'solo' ? 'bg-white text-black' : 'bg-white/10 text-white/70'
-                  }`}
+                  className={`px-3 py-1 rounded-full text-xs ${mode === 'solo' ? 'bg-white text-black' : 'bg-white/10 text-white/70'
+                    }`}
                 >
                   Solo
                 </button>
@@ -343,9 +347,8 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
                     e.stopPropagation()
                     setMode('duo')
                   }}
-                  className={`px-3 py-1 rounded-full text-xs ${
-                    mode === 'duo' ? 'bg-white text-black' : 'bg-white/10 text-white/70'
-                  }`}
+                  className={`px-3 py-1 rounded-full text-xs ${mode === 'duo' ? 'bg-white text-black' : 'bg-white/10 text-white/70'
+                    }`}
                 >
                   Two readers
                 </button>
@@ -378,7 +381,7 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
           <div className="pt-8 flex flex-col items-center gap-3">
             <button
               onClick={enterStory}
-              className="w-16 h-16 border-2 border-white/40 rounded-full flex items-center justify-center animate-pulse"
+              className="w-16 h-16 rounded-full border-2 border-[#f0d28c]/70 bg-[#1b0f0b]/40 flex items-center justify-center animate-pulse"
             >
               <span className="text-white/80 text-2xl">▶</span>
             </button>
@@ -393,32 +396,32 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
       ) : (
         <>
           {/* Progress */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-11/12 max-w-xl space-y-2">
-            <div className="flex items-center justify-between text-xs text-white/70">
+          <div className="absolute top-12 md:top-4 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-11/12 max-w-xl space-y-1.5 md:space-y-2">
+            <div className="flex items-center justify-between text-[10px] md:text-xs text-white/70">
               <span>Chapter</span>
               <span>{currentParagraph + 1} / {chapter.paragraphs.length}</span>
             </div>
-            <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-1.5 md:h-2 bg-white/20 rounded-full overflow-hidden">
               <div
-                className="h-full bg-white/80 rounded-full transition-all"
+                className="h-full rounded-full bg-gradient-to-r from-[#b08a3a] via-[#f0d28c] to-[#d2b15c] transition-all"
                 style={{ width: `${((currentParagraph + 1) / chapter.paragraphs.length) * 100}%` }}
               />
             </div>
-            <div className="flex items-center justify-between text-xs text-white/70">
+            <div className="flex items-center justify-between text-[10px] md:text-xs text-white/70">
               <span>Book</span>
               <span>{currentChapterIndex + 1} / {totalChapters}</span>
             </div>
-            <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-1.5 md:h-2 bg-white/20 rounded-full overflow-hidden">
               <div
-                className="h-full bg-white/80 rounded-full transition-all"
+                className="h-full rounded-full bg-gradient-to-r from-[#b08a3a] via-[#f0d28c] to-[#d2b15c] transition-all"
                 style={{ width: `${((currentChapterIndex + 1) / totalChapters) * 100}%` }}
               />
             </div>
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 flex flex-col items-center justify-center px-6 py-20 relative z-10">
-            <div className="w-full max-w-2xl space-y-4">
+          <div className="flex-1 flex flex-col items-center justify-start px-3 md:px-6 pt-28 md:pt-24 pb-6 relative z-10">
+            <div className="w-full space-y-3 md:space-y-4">
               {chapter.paragraphs.map((item, index) => {
                 const isActive = index === currentParagraph
                 const canRead = mode !== 'duo' || !item.reader || item.reader === activeReader
@@ -426,27 +429,26 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
                   <button
                     key={item.id || index}
                     onClick={() => onSelectParagraph(index)}
-                    className={`w-full text-left rounded-2xl border transition-all ${
-                      isActive
-                        ? 'border-white/70 bg-white/20'
-                        : 'border-white/20 bg-white/10 hover:bg-white/15'
-                    }`}
+                    className={`w-full text-left rounded-xl md:rounded-2xl border transition-all ${isActive
+                      ? 'border-white/70 bg-white/20'
+                      : 'border-white/20 bg-white/10 hover:bg-white/15'
+                      }`}
                   >
-                    <div className="p-5 md:p-6">
-                      <div className="flex items-center justify-between mb-3">
+                    <div className="p-3 md:p-5">
+                      <div className="flex items-center justify-between mb-2 md:mb-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-white/60">Line {index + 1}</span>
+                          <span className="text-[10px] md:text-xs text-white/60">Line {index + 1}</span>
                           {mode === 'duo' && item.reader && (
-                            <span className="text-xs px-2 py-1 rounded-full bg-white/20 text-white">
+                            <span className="text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-full bg-white/20 text-white">
                               {readerNames[item.reader] || `Reader ${item.reader}`}
                             </span>
                           )}
                         </div>
                         {!canRead && (
-                          <span className="text-xs text-white/50">Other reader</span>
+                          <span className="text-[10px] md:text-xs text-white/50">Other reader</span>
                         )}
                       </div>
-                      <p className={`text-lg md:text-xl leading-relaxed font-serif ${isActive ? 'text-white' : 'text-white/80'}`}>
+                      <p className={`text-base md:text-xl leading-relaxed font-serif ${isActive ? 'text-white' : 'text-white/80'}`}>
                         {item.text}
                       </p>
                     </div>
@@ -457,87 +459,76 @@ export default function ReadingScreen({ story, chapter, currentParagraph, curren
           </div>
 
           {/* Bottom controls */}
-          <div className="relative z-10 pb-12 flex flex-col items-center gap-6">
+          <div className="sticky bottom-0 z-10 bg-gradient-to-t from-[#1b0f0b] via-[#1b0f0b]/95 to-transparent pt-6 pb-6 md:pb-10 flex flex-col items-center gap-4 md:gap-6">
             {mode === 'duo' && (
-              <div className="flex items-center gap-3 text-white/70 text-sm">
+              <div className="flex items-center gap-2 md:gap-3 text-white/70 text-xs md:text-sm">
                 <span>Active:</span>
                 <button
                   onClick={() => setActiveReader(1)}
-                  className={`px-3 py-1 rounded-full ${
-                    activeReader === 1 ? 'bg-white text-black' : 'bg-white/10'
-                  }`}
+                  className={`px-2 md:px-3 py-1 rounded-full text-xs md:text-sm ${activeReader === 1 ? 'bg-white text-black' : 'bg-white/10'
+                    }`}
                 >
                   {readerNames[1] || 'Reader 1'}
                 </button>
                 <button
                   onClick={() => setActiveReader(2)}
-                  className={`px-3 py-1 rounded-full ${
-                    activeReader === 2 ? 'bg-white text-black' : 'bg-white/10'
-                  }`}
+                  className={`px-2 md:px-3 py-1 rounded-full text-xs md:text-sm ${activeReader === 2 ? 'bg-white text-black' : 'bg-white/10'
+                    }`}
                 >
                   {readerNames[2] || 'Reader 2'}
                 </button>
               </div>
             )}
-            {mode === 'solo' ? (
-              <div className="flex items-center gap-2 text-white/70 text-sm">
-                <span>Include background in recording</span>
-                <button
-                  onClick={() => setIncludeBackground(!includeBackground)}
-                  className={`px-3 py-1 rounded-full text-xs ${
-                    includeBackground ? 'bg-white text-black' : 'bg-white/10'
-                  }`}
-                >
-                  {includeBackground ? 'On' : 'Off'}
-                </button>
-              </div>
-            ) : (
-              <div className="text-white/60 text-sm">
-                Background audio is included for two‑reader recordings
-              </div>
-            )}
-            {/* Recording button */}
-            <button
-              onClick={() => (isRecording ? stopRecording() : startRecording())}
-              className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${
-                isRecording
+
+            {/* Recording and continue row */}
+            <div className="flex items-center gap-4 md:gap-6">
+              {/* Recording button */}
+              <button
+                onClick={() => (isRecording ? stopRecording() : startRecording())}
+                className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all ${isRecording
                   ? 'bg-red-500 scale-110'
                   : hasRecording
-                  ? 'bg-green-500/80'
-                  : 'bg-white/20 backdrop-blur-sm border-2 border-white/40'
-              }`}
-            >
-              {isRecording ? (
-                <div className="w-6 h-6 bg-white rounded-sm animate-pulse" />
-              ) : hasRecording ? (
-                <span className="text-white text-2xl">✓</span>
-              ) : (
-                <span className="text-white text-3xl">🎙</span>
-              )}
-            </button>
+                    ? 'bg-green-500/80'
+                    : 'bg-white/20 backdrop-blur-sm border-2 border-white/40'
+                  }`}
+              >
+                {isRecording ? (
+                  <div className="w-5 h-5 md:w-6 md:h-6 bg-white rounded-sm animate-pulse" />
+                ) : hasRecording ? (
+                  <span className="text-white text-xl md:text-2xl">✓</span>
+                ) : (
+                  <span className="text-white text-2xl md:text-3xl">🎙</span>
+                )}
+              </button>
 
-            <p className="text-white/50 text-sm">
+              {/* Continue button */}
+              {hasRecording && (
+                <button
+                  onClick={handleContinue}
+                  className="px-6 py-3 md:px-8 md:py-3 rounded-full border border-[#f0d28c]/70 bg-[#b08a3a] text-black/90 text-sm md:text-base uppercase tracking-[0.15em] md:tracking-[0.2em] hover:bg-[#d2b15c] transition-all"
+                >
+                  {currentParagraph < chapter.paragraphs.length - 1 ? 'continue' : 'finish chapter'}
+                </button>
+              )}
+            </div>
+
+            <p className="text-white/50 text-xs md:text-sm">
               {isRecording ? 'recording...' : hasRecording ? 'recorded' : 'tap to record'}
             </p>
 
             {mode === 'duo' && paragraph.reader && paragraph.reader !== activeReader && (
-              <p className="text-white/50 text-xs text-center max-w-xs">
+              <p className="text-white/50 text-[10px] md:text-xs text-center max-w-xs">
                 This line is for {readerNames[paragraph.reader] || `Reader ${paragraph.reader}`}.
               </p>
             )}
 
             {recordingError && (
-              <p className="text-red-200 text-xs text-center max-w-xs">{recordingError}</p>
-            )}
-
-            {/* Continue button */}
-            {hasRecording && (
-              <button
-                onClick={handleContinue}
-                className="px-8 py-3 bg-white/20 backdrop-blur-sm text-white rounded-full border border-white/30 hover:bg-white/30 transition-all"
-              >
-                {currentParagraph < chapter.paragraphs.length - 1 ? 'continue' : 'finish chapter'}
-              </button>
+              <div className="flex flex-col items-center gap-1">
+                <p className="text-red-200 text-[10px] md:text-xs text-center max-w-xs">{recordingError}</p>
+                <Link href="/test-mic" target="_blank" className="text-[#f0d28c] text-[10px] md:text-xs underline hover:text-white">
+                  Troubleshoot Microphone
+                </Link>
+              </div>
             )}
           </div>
         </>

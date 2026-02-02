@@ -5,14 +5,14 @@
 @tailwind utilities;
 
 :root {
-  --background: #f5f3f0;
-  --foreground: #3a3532;
+  --background: #f7f1e6;
+  --foreground: #2b1a12;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: 'Georgia', serif;
+  background: radial-gradient(circle at top, #f9efe1 0%, #f3e6d6 55%, #efe1cf 100%);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   line-height: 1.6;
 }
 
